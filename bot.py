@@ -28,8 +28,8 @@ logger = logging.getLogger(__name__)
 #  КОНФИГ — меняй здесь
 # ════════════════════════════════════════════
 
-BOT_TOKEN  = "8030258531:AAEZwVVXiQ9JJO0w2X8r_6_3JdsqMlOh0XE"   # ← вставь токен от BotFather
-ADMIN_ID   = 5811476376            # ← вставь свой Telegram ID
+BOT_TOKEN  = "ВАШ_ТОКЕН_ЗДЕСЬ"   # ← вставь токен от BotFather
+ADMIN_ID   = 123456789            # ← вставь свой Telegram ID
 PORT       = 8080
 DB_PATH    = "hminer.db"
 
@@ -1171,6 +1171,22 @@ async def text_router(update: Update, ctx):
     if ("купить" in low or "buy" in low) and ("дкоин" in low or "д-коин" in low or "dcoins" in low):
         await handle_buy_dcoins(update, ctx); return
 
+    # Русские варианты slash-команд (Telegram не принимает кириллицу в CommandHandler)
+    if low.startswith("/профиль") or low.startswith("/profile"):
+        parts = text.split()
+        ctx.args = parts[1:] if len(parts) > 1 else []
+        await cmd_profile(update, ctx); return
+    if low.startswith("/вайп") or low.startswith("/wipe"):
+        parts = text.split()
+        ctx.args = parts[1:] if len(parts) > 1 else []
+        await cmd_wipe(update, ctx); return
+    if low.startswith("/дать") or low.startswith("/give"):
+        parts = text.split()
+        ctx.args = parts[1:] if len(parts) > 1 else []
+        await cmd_give(update, ctx); return
+    if low.startswith("/stats") or low.startswith("/стат"):
+        await cmd_stats(update, ctx); return
+
 
 # ════════════════════════════════════════════
 #  ЗАПУСК
@@ -1193,14 +1209,15 @@ def main():
     threading.Thread(target=run_flask, daemon=True).start()
     logger.info(f"Flask запущен на порту {PORT}")
     app = Application.builder().token(BOT_TOKEN).build()
+    # Только латинские команды — Telegram не принимает кириллицу в CommandHandler
     app.add_handler(CommandHandler("start",   cmd_start))
-    app.add_handler(CommandHandler("профиль", cmd_profile))
     app.add_handler(CommandHandler("profile", cmd_profile))
-    app.add_handler(CommandHandler("вайп",    cmd_wipe))
     app.add_handler(CommandHandler("stats",   cmd_stats))
-    app.add_handler(CommandHandler("дать",    cmd_give))
+    app.add_handler(CommandHandler("wipe",    cmd_wipe))
+    app.add_handler(CommandHandler("give",    cmd_give))
     app.add_handler(PreCheckoutQueryHandler(pre_checkout))
     app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment))
+    # Все текстовые сообщения (включая русские команды) — через роутер
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_router))
     logger.info("HMiner Bot запущен! 🚀")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
