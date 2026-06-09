@@ -28,8 +28,8 @@ logger = logging.getLogger(__name__)
 #  КОНФИГ — меняй здесь
 # ════════════════════════════════════════════
 
-BOT_TOKEN  = "ВАШ_ТОКЕН_ЗДЕСЬ"   # ← вставь токен от BotFather
-ADMIN_ID   = 123456789            # ← вставь свой Telegram ID
+BOT_TOKEN  = "8030258531:AAEZwVVXiQ9JJO0w2X8r_6_3JdsqMlOh0XE"   # ← вставь токен от BotFather
+ADMIN_ID   = 5811476376        # ← вставь свой Telegram ID
 PORT       = 8080
 DB_PATH    = "hminer.db"
 
